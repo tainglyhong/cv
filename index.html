@@ -15,7 +15,6 @@
     />
     <meta name="theme-color" content="#ffffff" id="theme-color-meta" />
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -25,8 +24,8 @@
 
     <style>
       /* =====================================
-       THEME TOKENS (Light / Dark)
-       ===================================== */
+      THEME TOKENS (Light / Dark)
+      ===================================== */
       :root {
         /* Light (default) */
         --bg: #f7fafc;
@@ -93,6 +92,10 @@
         background: var(--bg);
         color: var(--ink);
         overflow-x: hidden;
+      }
+      /* ADDED: Lock scroll when mobile nav is open */
+      body.nav-open {
+        overflow: hidden;
       }
 
       /* ====== Pastel Gradient Background (GPU-friendly) ====== */
@@ -207,20 +210,20 @@
         color: white;
       }
 
-      nav {
+      .desktop-nav {
         position: relative;
         display: flex;
         align-items: center;
       }
-      .nav a {
+      .desktop-nav a {
         color: var(--muted);
         text-decoration: none;
         margin-left: 22px;
         font-weight: 600;
         position: relative;
       }
-      .nav a.active,
-      .nav a:hover {
+      .desktop-nav a.active,
+      .desktop-nav a:hover {
         color: var(--ink);
       }
       /* Magnetic underline */
@@ -233,6 +236,12 @@
         border-radius: 2px;
         transition: transform 0.25s, width 0.25s;
         transform-origin: left center;
+      }
+      /* ADDED: Actions wrapper */
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
 
       .btn {
@@ -362,11 +371,36 @@
         background: var(--panel);
         border: 1px solid var(--line);
         box-shadow: var(--shadow);
+        text-decoration: none;
+        color: var(--ink);
       }
       .chip svg {
         width: 16px;
         height: 16px;
         color: var(--brand);
+      }
+
+      /* ADDED: Hero action buttons layout */
+      .hero-actions {
+        display: flex;
+        gap: 12px;
+      }
+      /* ADDED: Hero stats layout */
+      .hero-stats {
+        margin-top: 28px;
+      }
+      .stat-group {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+      }
+      .stat-item {
+        flex: 1;
+      }
+      .stat-value {
+        font-size: clamp(32px, 4.5vw, 40px);
+        font-weight: 800;
+        line-height: 1;
       }
 
       /* ====== Sections ====== */
@@ -405,13 +439,6 @@
       }
       .span-12 {
         grid-column: 1/-1;
-      }
-      @media (max-width: 900px) {
-        .span-7,
-        .span-6,
-        .span-5 {
-          grid-column: 1/-1;
-        }
       }
 
       /* ====== Reveal Animations & Tilt ====== */
@@ -481,6 +508,7 @@
       .bullets {
         margin: 10px 0 4px 18px;
         color: color-mix(in oklab, var(--ink) 80%, transparent);
+        padding-left: 0; /* Reset default */
       }
       .bullets li {
         margin: 6px 0;
@@ -508,10 +536,18 @@
         opacity: 1;
       }
 
+      /* ====== Contact ====== */
+      .contact-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 10px;
+      }
+
       /* ====== Footer ====== */
       footer {
         text-align: center;
-        padding: 40px 0 70px;
+        padding: 40px 20px 70px;
         color: var(--muted);
       }
 
@@ -533,6 +569,7 @@
         transform: translateY(12px);
         box-shadow: var(--shadow);
         transition: opacity 0.3s, transform 0.3s;
+        z-index: 50;
       }
       .to-top.show {
         opacity: 1;
@@ -541,7 +578,6 @@
 
       /* Theme toggle button */
       .theme-toggle {
-        margin-left: 16px;
         width: 40px;
         height: 40px;
         border-radius: 999px;
@@ -554,18 +590,130 @@
         box-shadow: var(--shadow);
       }
 
+      /* =====================================
+      ADDED: Mobile Navigation & Responsive
+      ===================================== */
+
+      /* Hamburger Toggle */
+      .mobile-nav-toggle {
+        display: none; /* Hidden by default */
+        width: 40px;
+        height: 40px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        padding: 8px;
+        z-index: 100; /* Above everything */
+      }
+      .mobile-nav-toggle .bar {
+        display: block;
+        width: 100%;
+        height: 3px;
+        background: var(--ink);
+        border-radius: 3px;
+        transition: transform 0.3s, opacity 0.3s;
+      }
+      .mobile-nav-toggle .bar:nth-child(2) {
+        margin: 5px 0;
+      }
+      /* Active (X) state for hamburger */
+      body.nav-open .mobile-nav-toggle .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+      }
+      body.nav-open .mobile-nav-toggle .bar:nth-child(2) {
+        opacity: 0;
+      }
+      body.nav-open .mobile-nav-toggle .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+      }
+
+      /* Tablet and Mobile Breakpoint */
+      @media (max-width: 768px) {
+        .desktop-nav {
+          position: fixed;
+          inset: 0;
+          background: var(--panel);
+          z-index: 99;
+
+          /* Hidden by default */
+          opacity: 0;
+          transform: scale(0.95);
+          pointer-events: none;
+
+          /* Show when nav-open */
+          transition: opacity 0.3s, transform 0.3s;
+
+          /* Centered items */
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+        body.nav-open .desktop-nav {
+          opacity: 1;
+          transform: scale(1);
+          pointer-events: auto;
+        }
+        .desktop-nav a {
+          font-size: 24px;
+          margin: 0 0 24px 0; /* Stack vertically */
+        }
+        .nav-underline {
+          display: none; /* Hide on mobile */
+        }
+        .mobile-nav-toggle {
+          display: flex; /* Show on mobile */
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+
+      /* General Responsiveness */
+      @media (max-width: 900px) {
+        .span-7,
+        .span-6,
+        .span-5 {
+          grid-column: 1/-1;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .hero {
+          padding: 48px 0 16px;
+        }
+        section {
+          padding: 40px 0;
+        }
+        .panel {
+          padding: 18px;
+        }
+        .stat-group {
+          gap: 16px;
+        }
+        .hero-actions {
+          flex-direction: column;
+        }
+        .btn {
+          width: 100%;
+          text-align: center;
+        }
+        .contact-actions {
+          flex-direction: column;
+        }
+      }
+
       /* Reduced motion */
       @media (prefers-reduced-motion: reduce) {
         .reveal,
-        .tag {
-          transition: none;
-        }
+        .tag,
         .progress {
           transition: none;
         }
       }
     </style>
   </head>
+
   <body>
     <div class="bg-anim"></div>
     <div class="orb orb-1"></div>
@@ -589,7 +737,8 @@
           </div>
           <span>Taing Lyhong</span>
         </div>
-        <nav aria-label="Primary" id="primary-nav">
+
+        <nav class="desktop-nav" aria-label="Primary" id="primary-nav">
           <a href="#about">About</a>
           <a href="#experience">Experience</a>
           <a href="#skills">Skills</a>
@@ -597,41 +746,53 @@
           <a href="#contact">Contact</a>
           <span class="nav-underline" id="nav-underline"></span>
         </nav>
-        <button
-          class="theme-toggle"
-          id="themeToggle"
-          aria-label="Toggle dark mode"
-          title="Toggle theme"
-        >
-          <svg
-            id="icon-sun"
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="currentColor"
+
+        <div class="header-actions">
+          <button
+            class="theme-toggle"
+            id="themeToggle"
+            aria-label="Toggle dark mode"
+            title="Toggle theme"
           >
-            <path
-              d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.8 1.42-1.42zm10.45 14.32l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM1 13h3v-2H1v2zm19 0h3v-2h-3v2zM4.95 19.07l1.41 1.41 1.8-1.79-1.41-1.41-1.8 1.79zM17.66 4.84l1.8-1.79-1.41-1.41-1.79 1.8 1.4 1.4zM12 18a6 6 0 100-12 6 6 0 000 12z"
-            />
-          </svg>
-          <svg
-            id="icon-moon"
-            style="display: none"
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="currentColor"
+            <svg
+              id="icon-sun"
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.8 1.42-1.42zm10.45 14.32l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM1 13h3v-2H1v2zm19 0h3v-2h-3v2zM4.95 19.07l1.41 1.41 1.8-1.79-1.41-1.41-1.8 1.79zM17.66 4.84l1.8-1.79-1.41-1.41-1.79 1.8 1.4 1.4zM12 18a6 6 0 100-12 6 6 0 000 12z"
+              />
+            </svg>
+            <svg
+              id="icon-moon"
+              style="display: none"
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M12.74 2a9 9 0 108.52 12.11A8 8 0 0112.74 2z" />
+            </svg>
+          </button>
+
+          <button
+            class="mobile-nav-toggle"
+            id="mobileNavToggle"
+            aria-label="Open menu"
           >
-            <path d="M12.74 2a9 9 0 108.52 12.11A8 8 0 0112.74 2z" />
-          </svg>
-        </button>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </button>
+        </div>
       </div>
     </header>
 
     <main class="wrap">
-      <!-- Hero -->
       <section class="hero">
         <p class="subtitle reveal" id="rotating-role" aria-live="polite">
           IT Assistant • Web Developer
@@ -643,7 +804,7 @@
         </h1>
 
         <div class="meta">
-          <span class="chip reveal" style="--delay: 0.1s">
+          <span class="chip reveal">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path
                 d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-3.31 0-6 2.24-6 5v1h12v-1c0-2.76-2.69-5-6-5z"
@@ -667,61 +828,36 @@
           </a>
         </div>
 
-        <div style="display: flex; gap: 12px" class="reveal">
+        <div class="hero-actions reveal">
           <a class="btn" id="dlBtn" href="CV.pdf" download>Download CV (PDF)</a>
           <a class="btn ghost" href="#contact">Get in touch</a>
         </div>
 
-        <!-- Tiny stats with counters -->
-        <div class="cols" style="margin-top: 28px">
+        <div class="hero-stats cols">
           <div class="span-6">
             <div class="panel reveal tilt">
-              <div class="tilt-child">
-                <div style="display: flex; gap: 24px; align-items: center">
-                  <div>
-                    <div
-                      style="font-size: 40px; font-weight: 800; line-height: 1"
-                      data-counter="3"
-                    >
-                      0
-                    </div>
-                    <div class="subtitle">Years experience</div>
-                  </div>
-                  <div>
-                    <div
-                      style="font-size: 40px; font-weight: 800; line-height: 1"
-                      data-counter="12"
-                    >
-                      0
-                    </div>
-                    <div class="subtitle">Projects shipped</div>
-                  </div>
+              <div class="tilt-child stat-group">
+                <div class="stat-item">
+                  <div class="stat-value" data-counter="3">0</div>
+                  <div class="subtitle">Years experience</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" data-counter="12">0</div>
+                  <div class="subtitle">Projects shipped</div>
                 </div>
               </div>
             </div>
           </div>
           <div class="span-6">
             <div class="panel reveal tilt">
-              <div class="tilt-child">
-                <div style="display: flex; gap: 24px; align-items: center">
-                  <div>
-                    <div
-                      style="font-size: 40px; font-weight: 800; line-height: 1"
-                      data-counter="5"
-                    >
-                      0
-                    </div>
-                    <div class="subtitle">Core stacks</div>
-                  </div>
-                  <div>
-                    <div
-                      style="font-size: 40px; font-weight: 800; line-height: 1"
-                      data-counter="100"
-                    >
-                      0
-                    </div>
-                    <div class="subtitle">% delivery focus</div>
-                  </div>
+              <div class="tilt-child stat-group">
+                <div class="stat-item">
+                  <div class="stat-value" data-counter="5">0</div>
+                  <div class="subtitle">Core stacks</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" data-counter="100">0</div>
+                  <div class="subtitle">% delivery focus</div>
                 </div>
               </div>
             </div>
@@ -729,7 +865,6 @@
         </div>
       </section>
 
-      <!-- About -->
       <section id="about" class="cols">
         <div class="span-7">
           <div class="panel reveal tilt">
@@ -737,7 +872,7 @@
               <h2 class="section-title">Summary</h2>
               <p>
                 Highly motivated and results‑oriented IT professional with 3+
-                years experience in programming and web development. Comfortable
+                years experience in programming and web development. Comfortable
                 across the stack: JavaScript, Python, C/C++, PHP/Laravel, SQL,
                 and modern front‑end tooling. Strong collaborator who enjoys
                 debugging hard problems and turning ideas into secure,
@@ -764,7 +899,6 @@
         </div>
       </section>
 
-      <!-- Experience -->
       <section id="experience">
         <h2 class="section-title">Experience</h2>
         <div class="cols">
@@ -818,7 +952,6 @@
         </div>
       </section>
 
-      <!-- Skills -->
       <section id="skills" class="cols">
         <div class="span-6">
           <div class="panel reveal tilt">
@@ -883,7 +1016,6 @@
         </div>
       </section>
 
-      <!-- Education -->
       <section id="education">
         <h2 class="section-title">Education</h2>
         <div class="cols">
@@ -911,7 +1043,6 @@
         </div>
       </section>
 
-      <!-- Contact -->
       <section id="contact" class="cols">
         <div class="span-12 panel reveal tilt" style="text-align: center">
           <div class="tilt-child">
@@ -920,14 +1051,7 @@
               Interested in collaborations, freelance projects, or full‑time
               roles? Let’s talk.
             </p>
-            <div
-              style="
-                display: flex;
-                gap: 12px;
-                justify-content: center;
-                margin-top: 10px;
-              "
-            >
+            <div class="contact-actions">
               <a class="btn" href="mailto:tainglyhong168@gmail.com">Email Me</a>
               <a class="btn ghost" href="tel:+85516860853">Call</a>
             </div>
@@ -956,280 +1080,303 @@
         <path d="M12 2l-6 6h4v8h4V8h4z" />
       </svg>
     </button>
-
-    <script>
-      const prefersReduce = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      ).matches;
-
-      // Year
-      document.getElementById("y").textContent = new Date().getFullYear();
-
-      // Scroll progress
-      const progress = document.getElementById("progress");
-      const updateProgress = () => {
-        const scrollTop = window.scrollY;
-        const docH = document.documentElement.scrollHeight - window.innerHeight;
-        const p = docH > 0 ? scrollTop / docH : 0;
-        progress.style.transform = `scaleX(${p})`;
-      };
-      updateProgress();
-      window.addEventListener("scroll", updateProgress, { passive: true });
-
-      // Reveal on view — Intersection Observer with stagger
-      const io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            if (e.isIntersecting) {
-              e.target.classList.add("in-view");
-              // Stagger children if any skills tags
-              if (e.target.classList.contains("skills")) {
-                [...e.target.querySelectorAll(".tag")].forEach((t, i) => {
-                  setTimeout(() => t.classList.add("in-view"), i * 60);
-                });
-              }
-              io.unobserve(e.target);
-            }
-          }
-        },
-        { threshold: 0.2 }
-      );
-      document
-        .querySelectorAll(".reveal, .panel, .item, .skills")
-        .forEach((el) => io.observe(el));
-
-      // Back-to-top button
-      const toTop = document.getElementById("toTop");
-      const onScroll = () => {
-        if (window.scrollY > 480) toTop.classList.add("show");
-        else toTop.classList.remove("show");
-      };
-      window.addEventListener("scroll", onScroll, { passive: true });
-      toTop.addEventListener("click", () =>
-        window.scrollTo({ top: 0, behavior: prefersReduce ? "auto" : "smooth" })
-      );
-
-      // Smooth anchor scroll with header offset + scroll spy
-      const header = document.querySelector("header");
-      const navLinks = [...document.querySelectorAll("#primary-nav a")];
-      function smoothScroll(e) {
-        if (e.target.tagName !== "A") return;
-        const href = e.target.getAttribute("href");
-        if (!href.startsWith("#")) return;
-        e.preventDefault();
-        const el = document.querySelector(href);
-        if (!el) return;
-        const top =
-          el.getBoundingClientRect().top +
-          window.scrollY -
-          (header.offsetHeight + 8);
-        window.scrollTo({ top, behavior: prefersReduce ? "auto" : "smooth" });
-        history.replaceState(null, "", href);
-      }
-      document
-        .getElementById("primary-nav")
-        .addEventListener("click", smoothScroll);
-
-      // Scroll spy
-      const sections = navLinks
-        .map((a) => document.querySelector(a.getAttribute("href")))
-        .filter(Boolean);
-      const spy = new IntersectionObserver(
-        (entries) => {
-          const vis = entries
-            .filter((e) => e.isIntersecting)
-            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-          if (!vis) return;
-          const id = "#" + vis.target.id;
-          navLinks.forEach((a) =>
-            a.classList.toggle("active", a.getAttribute("href") === id)
-          );
-          moveUnderline();
-        },
-        { rootMargin: "-40% 0px -50% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
-      );
-      sections.forEach((s) => spy.observe(s));
-
-      // Magnetic underline for nav
-      const underline = document.getElementById("nav-underline");
-      function moveUnderline(target) {
-        const a = target || document.querySelector("#primary-nav a.active");
-        if (!a) return;
-        const rect = a.getBoundingClientRect();
-        const navRect = a.parentElement.getBoundingClientRect();
-        underline.style.width = rect.width + "px";
-        underline.style.transform = `translateX(${rect.left - navRect.left}px)`;
-      }
-      navLinks.forEach((a) => {
-        a.addEventListener("mouseenter", () => moveUnderline(a));
-        a.addEventListener("focus", () => moveUnderline(a));
-      });
-      window.addEventListener("resize", () => moveUnderline());
-      moveUnderline();
-
-      // Rotating role (typewriter)
-      const roles = [
-        "IT Assistant • Web Developer",
-        "Laravel & MySQL • Telegram Bot",
-        "WordPress • UI/UX Tinkerer",
-        "API Design • Clean Code Enthusiast",
-      ];
-      const roleEl = document.getElementById("rotating-role");
-      let idx = 0,
-        typing = false;
-      function typeNext() {
-        if (typing) return;
-        typing = true;
-        const text = roles[idx % roles.length];
-        roleEl.textContent = "";
-        [...text].forEach((ch, i) =>
-          setTimeout(() => {
-            roleEl.textContent += ch;
-          }, i * 24)
-        );
-        setTimeout(() => {
-          typing = false;
-          idx++;
-        }, text.length * 24 + 1400);
-      }
-      setInterval(typeNext, 2600);
-      typeNext();
-
-      // Counters
-      const counters = [...document.querySelectorAll("[data-counter]")];
-      const ioCounter = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (!e.isIntersecting) return;
-            const el = e.target;
-            const target = +el.dataset.counter;
-            let cur = 0;
-            const step = Math.ceil(target / 60);
-            const tick = () => {
-              cur += step;
-              if (cur > target) cur = target;
-              el.textContent = cur;
-              if (cur < target) requestAnimationFrame(tick);
-            };
-            tick();
-            ioCounter.unobserve(el);
-          });
-        },
-        { threshold: 0.4 }
-      );
-      counters.forEach((el) => ioCounter.observe(el));
-
-      // Button ripple
-      document.querySelectorAll(".btn").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-          const rect = btn.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          const circle = document.createElement("span");
-          circle.className = "ripple";
-          circle.style.left = x + "px";
-          circle.style.top = y + "px";
-          circle.style.width = circle.style.height =
-            Math.max(rect.width, rect.height) + "px";
-          btn.appendChild(circle);
-          setTimeout(() => circle.remove(), 650);
-        });
-      });
-
-      // Parallax orbs & tilt cards
-      const orbs = document.querySelectorAll(".orb");
-      const tiltEls = document.querySelectorAll(".tilt");
-      let px = 0,
-        py = 0; // pointer target
-      window.addEventListener("mousemove", (e) => {
-        px = e.clientX / window.innerWidth - 0.5;
-        py = e.clientY / window.innerHeight - 0.5;
-      });
-      function animate() {
-        if (!prefersReduce) {
-          orbs.forEach((o, i) => {
-            const depth = (i + 1) * 8; // different layers
-            o.style.transform = `translate(${px * depth}px, ${py * depth}px)`;
-          });
-        }
-        requestAnimationFrame(animate);
-      }
-      animate();
-
-      // Simple tilt on hover
-      tiltEls.forEach((el) => {
-        let rId;
-        el.addEventListener("pointermove", (e) => {
-          const rect = el.getBoundingClientRect();
-          const rx = ((e.clientY - rect.top) / rect.height - 0.5) * -8;
-          const ry = ((e.clientX - rect.left) / rect.width - 0.5) * 8;
-          cancelAnimationFrame(rId);
-          rId = requestAnimationFrame(
-            () => (el.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`)
-          );
-        });
-        ["pointerleave", "blur"].forEach((evt) =>
-          el.addEventListener(evt, () => {
-            el.style.transform = "rotateX(0deg) rotateY(0deg)";
-          })
-        );
-      });
-
-      // Download confetti (minimal)
-      const dlBtn = document.getElementById("dlBtn");
-      dlBtn.addEventListener("click", () => {
-        if (prefersReduce) return;
-        for (let i = 0; i < 14; i++) {
-          const s = document.createElement("span");
-          s.style.cssText =
-            "position:fixed;top:50%;left:50%;width:6px;height:10px;background:linear-gradient(180deg,var(--brand),var(--accent));transform:translate(-50%,-50%);z-index:70;border-radius:2px;pointer-events:none;";
-          document.body.appendChild(s);
-          const a = Math.random() * 2 * Math.PI,
-            d = 80 + Math.random() * 160,
-            r = 600 + Math.random() * 600;
-          s.animate(
-            [
-              { transform: "translate(-50%,-50%) rotate(0deg)", opacity: 1 },
-              {
-                transform: `translate(calc(-50% + ${
-                  Math.cos(a) * d
-                }px), calc(-50% + ${Math.sin(a) * d}px)) rotate(${r}deg)`,
-                opacity: 0,
-              },
-            ],
-            {
-              duration: 900 + Math.random() * 500,
-              easing: "cubic-bezier(.2,.8,.2,1)",
-            }
-          ).onfinish = () => s.remove();
-        }
-      });
-
-      // Theme toggle with persistence
-      const themeToggle = document.getElementById("themeToggle");
-      const metaTheme = document.getElementById("theme-color-meta");
-      function setTheme(mode) {
-        document.documentElement.setAttribute("data-theme", mode);
-        localStorage.setItem("theme", mode);
-        const dark = mode === "dark";
-        document.getElementById("icon-sun").style.display = dark
-          ? "none"
-          : "block";
-        document.getElementById("icon-moon").style.display = dark
-          ? "block"
-          : "none";
-        metaTheme.setAttribute("content", dark ? "#0b1220" : "#ffffff");
-      }
-      // init theme
-      const saved = localStorage.getItem("theme");
-      if (saved) setTheme(saved);
-      themeToggle.addEventListener("click", () =>
-        setTheme(
-          document.documentElement.getAttribute("data-theme") === "dark"
-            ? "light"
-            : "dark"
-        )
-      );
-    </script>
   </body>
 </html>
+
+<script>
+  // Wait for the DOM to be fully loaded before running scripts
+  document.addEventListener("DOMContentLoaded", () => {
+    const prefersReduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    // Year
+    document.getElementById("y").textContent = new Date().getFullYear();
+
+    // Scroll progress
+    const progress = document.getElementById("progress");
+    const updateProgress = () => {
+      const scrollTop = window.scrollY;
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      const p = docH > 0 ? scrollTop / docH : 0;
+      progress.style.transform = `scaleX(${p})`;
+    };
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+
+    // Reveal on view — Intersection Observer with stagger
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add("in-view");
+            // Stagger children if any skills tags
+            if (e.target.classList.contains("skills")) {
+              [...e.target.querySelectorAll(".tag")].forEach((t, i) => {
+                setTimeout(() => t.classList.add("in-view"), i * 60);
+              });
+            }
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { threshold: 0.2 }
+    );
+    document
+      .querySelectorAll(".reveal, .panel, .item, .skills")
+      .forEach((el) => io.observe(el));
+
+    // Back-to-top button
+    const toTop = document.getElementById("toTop");
+    const onScroll = () => {
+      if (window.scrollY > 480) toTop.classList.add("show");
+      else toTop.classList.remove("show");
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    toTop.addEventListener("click", () =>
+      window.scrollTo({ top: 0, behavior: prefersReduce ? "auto" : "smooth" })
+    );
+
+    // Smooth anchor scroll with header offset + scroll spy
+    const header = document.querySelector("header");
+    const navEl = document.getElementById("primary-nav"); // Use ID for main nav
+    const navLinks = [...navEl.querySelectorAll("a")];
+
+    function smoothScroll(e) {
+      if (e.target.tagName !== "A") return;
+      const href = e.target.getAttribute("href");
+      if (!href || !href.startsWith("#")) return;
+
+      e.preventDefault();
+      const el = document.querySelector(href);
+      if (!el) return;
+
+      // Close mobile nav on click
+      document.body.classList.remove("nav-open");
+
+      const top =
+        el.getBoundingClientRect().top +
+        window.scrollY -
+        (header.offsetHeight + 8);
+      window.scrollTo({ top, behavior: prefersReduce ? "auto" : "smooth" });
+      history.replaceState(null, "", href);
+    }
+    navEl.addEventListener("click", smoothScroll);
+
+    // Scroll spy
+    const sections = navLinks
+      .map((a) => document.querySelector(a.getAttribute("href")))
+      .filter(Boolean);
+    const spy = new IntersectionObserver(
+      (entries) => {
+        const vis = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!vis) return;
+        const id = "#" + vis.target.id;
+        navLinks.forEach((a) =>
+          a.classList.toggle("active", a.getAttribute("href") === id)
+        );
+        moveUnderline();
+      },
+      { rootMargin: "-40% 0px -50% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
+    sections.forEach((s) => spy.observe(s));
+
+    // Magnetic underline for nav
+    const underline = document.getElementById("nav-underline");
+    function moveUnderline(target) {
+      const a = target || document.querySelector("#primary-nav a.active");
+      if (!a) return;
+      const rect = a.getBoundingClientRect();
+      const navRect = a.parentElement.getBoundingClientRect();
+      underline.style.width = rect.width + "px";
+      underline.style.transform = `translateX(${rect.left - navRect.left}px)`;
+    }
+    navLinks.forEach((a) => {
+      a.addEventListener("mouseenter", () => moveUnderline(a));
+      a.addEventListener("focus", () => moveUnderline(a));
+    });
+    window.addEventListener("resize", () => moveUnderline());
+    moveUnderline();
+
+    // Rotating role (typewriter)
+    const roles = [
+      "IT Assistant • Web Developer",
+      "Laravel & MySQL • Telegram Bot",
+      "WordPress • UI/UX Tinkerer",
+      "API Design • Clean Code Enthusiast",
+    ];
+    const roleEl = document.getElementById("rotating-role");
+    let idx = 0,
+      typing = false;
+    function typeNext() {
+      if (typing) return;
+      typing = true;
+      const text = roles[idx % roles.length];
+      roleEl.textContent = "";
+      [...text].forEach((ch, i) =>
+        setTimeout(() => {
+          roleEl.textContent += ch;
+        }, i * 24)
+      );
+      setTimeout(() => {
+        typing = false;
+        idx++;
+      }, text.length * 24 + 1400);
+    }
+    setInterval(typeNext, 2600);
+    typeNext();
+
+    // Counters
+    const counters = [...document.querySelectorAll("[data-counter]")];
+    const ioCounter = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const el = e.target;
+          const target = +el.dataset.counter;
+          let cur = 0;
+          const step = Math.ceil(target / 60);
+          const tick = () => {
+            cur += step;
+            if (cur > target) cur = target;
+            el.textContent = cur;
+            if (cur < target) requestAnimationFrame(tick);
+          };
+          tick();
+          ioCounter.unobserve(el);
+        });
+      },
+      { threshold: 0.4 }
+    );
+    counters.forEach((el) => ioCounter.observe(el));
+
+    // Button ripple
+    document.querySelectorAll(".btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const circle = document.createElement("span");
+        circle.className = "ripple";
+        circle.style.left = x + "px";
+        circle.style.top = y + "px";
+        circle.style.width = circle.style.height =
+          Math.max(rect.width, rect.height) + "px";
+        btn.appendChild(circle);
+        setTimeout(() => circle.remove(), 650);
+      });
+    });
+
+    // Parallax orbs & tilt cards
+    const orbs = document.querySelectorAll(".orb");
+    const tiltEls = document.querySelectorAll(".tilt");
+    let px = 0,
+      py = 0; // pointer target
+    window.addEventListener("mousemove", (e) => {
+      px = e.clientX / window.innerWidth - 0.5;
+      py = e.clientY / window.innerHeight - 0.5;
+    });
+    function animate() {
+      if (!prefersReduce) {
+        orbs.forEach((o, i) => {
+          const depth = (i + 1) * 8; // different layers
+          o.style.transform = `translate(${px * depth}px, ${py * depth}px)`;
+        });
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Simple tilt on hover
+    tiltEls.forEach((el) => {
+      let rId;
+      el.addEventListener("pointermove", (e) => {
+        const rect = el.getBoundingClientRect();
+        const rx = ((e.clientY - rect.top) / rect.height - 0.5) * -8;
+        const ry = ((e.clientX - rect.left) / rect.width - 0.5) * 8;
+        cancelAnimationFrame(rId);
+        rId = requestAnimationFrame(
+          () => (el.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`)
+        );
+      });
+      ["pointerleave", "blur"].forEach((evt) =>
+        el.addEventListener(evt, () => {
+          el.style.transform = "rotateX(0deg) rotateY(0deg)";
+        })
+      );
+    });
+
+    // Download confetti (minimal)
+    const dlBtn = document.getElementById("dlBtn");
+    dlBtn.addEventListener("click", () => {
+      if (prefersReduce) return;
+      for (let i = 0; i < 14; i++) {
+        const s = document.createElement("span");
+        s.style.cssText =
+          "position:fixed;top:50%;left:50%;width:6px;height:10px;background:linear-gradient(180deg,var(--brand),var(--accent));transform:translate(-50%,-50%);z-index:70;border-radius:2px;pointer-events:none;";
+        document.body.appendChild(s);
+        const a = Math.random() * 2 * Math.PI,
+          d = 80 + Math.random() * 160,
+          r = 600 + Math.random() * 600;
+        s.animate(
+          [
+            { transform: "translate(-50%,-50%) rotate(0deg)", opacity: 1 },
+            {
+              transform: `translate(calc(-50% + ${
+                Math.cos(a) * d
+              }px), calc(-50% + ${Math.sin(a) * d}px)) rotate(${r}deg)`,
+              opacity: 0,
+            },
+          ],
+          {
+            duration: 900 + Math.random() * 500,
+            easing: "cubic-bezier(.2,.8,.2,1)",
+          }
+        ).onfinish = () => s.remove();
+      }
+    });
+
+    // Theme toggle with persistence
+    const themeToggle = document.getElementById("themeToggle");
+    const metaTheme = document.getElementById("theme-color-meta");
+    function setTheme(mode) {
+      document.documentElement.setAttribute("data-theme", mode);
+      localStorage.setItem("theme", mode);
+      const dark = mode === "dark";
+      document.getElementById("icon-sun").style.display = dark
+        ? "none"
+        : "block";
+      document.getElementById("icon-moon").style.display = dark
+        ? "block"
+        : "none";
+      metaTheme.setAttribute("content", dark ? "#0b1220" : "#ffffff");
+    }
+    // init theme
+    const saved = localStorage.getItem("theme");
+    if (saved) {
+      setTheme(saved);
+    } else if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+    themeToggle.addEventListener("click", () =>
+      setTheme(
+        document.documentElement.getAttribute("data-theme") === "dark"
+          ? "light"
+          : "dark"
+      )
+    );
+
+    // ADDED: Mobile navigation toggle
+    const mobileNavToggle = document.getElementById("mobileNavToggle");
+    mobileNavToggle.addEventListener("click", () => {
+      document.body.classList.toggle("nav-open");
+    });
+  });
+</script>
